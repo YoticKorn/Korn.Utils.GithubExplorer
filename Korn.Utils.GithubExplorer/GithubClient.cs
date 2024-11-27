@@ -38,6 +38,20 @@ public class GithubClient
     public List<RepositoryReleaseJson> GetRepositoryReleases(RepositoryID repository) 
         => SendSimpleGetRequest<List<RepositoryReleaseJson>>($"https://api.github.com/repos/{repository.Owner}/{repository.Name}/releases");
 
-    public List<RepositoryEntryJson> GetRepositoryEntry(RepositoryID repository, string? path = null)
+    public List<RepositoryEntryJson> GetRepositoryEntries(RepositoryID repository, string? path = null)
         => SendSimpleGetRequest<List<RepositoryEntryJson>>($"https://api.github.com/repos/{repository.Owner}/{repository.Name}/contents{(path is null ? "" : $"/{path}")}");
+
+    public byte[] DownloadAsset(RepositoryEntryJson asset)
+    {
+        if (asset.Type != "file")
+            throw new Exception("[GithubExplorer] GithubClient->DownloadAsset: the asset is not a file");
+
+        var downloadUrl = asset.GetDownloadUrl()!;
+        using var request = CreateGetRequest(downloadUrl);
+
+        var response = HttpClient.Send(request);
+        var bytes = response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+
+        return bytes;
+    }
 }

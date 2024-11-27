@@ -18,4 +18,6 @@ public record RepositoryEntryJson(
         [JsonProperty("self")] string Self,
         [JsonProperty("git")] string Git,
         [JsonProperty("html")] string Html);
+
+    public string? GetDownloadUrl() => DownloadUrl as string;
 }
