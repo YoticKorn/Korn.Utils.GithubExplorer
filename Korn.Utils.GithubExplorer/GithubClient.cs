@@ -23,15 +23,21 @@ public class GithubClient
         return request;
     }
 
-    public List<ReleaseJson> GetReleases(RepositoryID repository)
+    T SendSimpleGetRequest<T>(string url)
     {
-        using var request = CreateGetRequest($"https://api.github.com/repos/{repository.Owner}/{repository.Name}/releases");
-        
+        using var request = CreateGetRequest(url);
+
         var response = HttpClient.Send(request);
 
         var data = new StreamReader(response.Content.ReadAsStream()).ReadToEnd();
-        var result = JsonConvert.DeserializeObject<List<ReleaseJson>>(data)!;
+        var result = JsonConvert.DeserializeObject<T>(data)!;
 
         return result;
     }
+
+    public List<RepositoryReleaseJson> GetRepositoryReleases(RepositoryID repository) 
+        => SendSimpleGetRequest<List<RepositoryReleaseJson>>($"https://api.github.com/repos/{repository.Owner}/{repository.Name}/releases");
+
+    public List<RepositoryEntryJson> GetRepositoryEntry(RepositoryID repository, string? path = null)
+        => SendSimpleGetRequest<List<RepositoryEntryJson>>($"https://api.github.com/repos/{repository.Owner}/{repository.Name}/contents{(path is null ? "" : $"/{path}")}");
 }

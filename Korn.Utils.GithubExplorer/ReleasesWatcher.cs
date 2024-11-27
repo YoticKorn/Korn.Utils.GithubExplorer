@@ -13,7 +13,7 @@ public class ReleasesWatcher : IDisposable
     public readonly RepositoryID Repository;
     public TimeSpan WatchDelay = TimeSpan.FromSeconds(30);
 
-    public delegate void ReleaseArrivedDelegate(ReleaseJson release);
+    public delegate void ReleaseArrivedDelegate(RepositoryReleaseJson release);
     public event ReleaseArrivedDelegate? ReleaseArrived;
 
     bool watcherStarted;
@@ -36,7 +36,7 @@ public class ReleasesWatcher : IDisposable
         }
     }
 
-    public List<ReleaseJson> LastWatcherReleases
+    public List<RepositoryReleaseJson> LastWatcherReleases
     {
         get
         {
@@ -47,10 +47,10 @@ public class ReleasesWatcher : IDisposable
         }
     }
 
-    List<ReleaseJson>? releases;
+    List<RepositoryReleaseJson>? releases;
     void Watch()
     {
-        var newReleases = Client.GetReleases(Repository);
+        var newReleases = Client.GetRepositoryReleases(Repository);
 
         if (newReleases is null)
             throw new Exception("[GithubExplorer] ReleasesWatcher->Watch: Unable to fetch the repository releases");
