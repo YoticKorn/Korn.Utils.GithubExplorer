@@ -28,7 +28,14 @@ public record RepositoryReleaseJson(
     [JsonProperty("node_id")] string NodeId,
     [JsonProperty("name")] string Name,
     [JsonProperty("label")] object Label,
-    [JsonProperty("uploader")] Asset.UploaderData Uploader)
+    [JsonProperty("uploader")] Asset.UploaderData Uploader,
+    [JsonProperty("content_type")] string ContentType,
+    [JsonProperty("state")] string State,
+    [JsonProperty("size")] int Size,
+    [JsonProperty("download_count")] int DownloadCount,
+    [JsonProperty("created_at")] DateTime CreatedAt,
+    [JsonProperty("updated_at")] DateTime UpdatedAt,
+    [JsonProperty("browser_download_url")] string BrowserDownloadUrl)
     {
         public record UploaderData(
             [JsonProperty("login")] string Login,

@@ -41,17 +41,23 @@ public class GithubClient
     public List<RepositoryEntryJson> GetRepositoryEntries(RepositoryID repository, string? path = null)
         => SendSimpleGetRequest<List<RepositoryEntryJson>>($"https://api.github.com/repos/{repository.Owner}/{repository.Name}/contents{(path is null ? "" : $"/{path}")}");
 
-    public byte[] DownloadAsset(RepositoryEntryJson asset)
+    byte[] DownloadAsset(string url)
     {
-        if (asset.Type != "file")
-            throw new Exception("[GithubExplorer] GithubClient->DownloadAsset: the asset is not a file");
-
-        var downloadUrl = asset.GetDownloadUrl()!;
-        using var request = CreateGetRequest(downloadUrl);
+        using var request = CreateGetRequest(url);
 
         var response = HttpClient.Send(request);
         var bytes = response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
 
         return bytes;
+    }
+
+    public byte[] DownloadAsset(RepositoryReleaseJson.Asset asset) => DownloadAsset(asset.BrowserDownloadUrl);
+
+    public byte[] DownloadAsset(RepositoryEntryJson asset)
+    {
+        if (asset.Type != "file")
+            throw new Exception("[GithubExplorer] GithubClient->DownloadAsset: the asset is not a file");
+
+        return DownloadAsset(asset.GetDownloadUrl()!);
     }
 }
