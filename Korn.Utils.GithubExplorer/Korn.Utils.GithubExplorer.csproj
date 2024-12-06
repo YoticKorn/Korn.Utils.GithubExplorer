@@ -1,16 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\repos\PrimeCharts\Steam\bin\x64\Debug\net6.0-windows\win-x64\Newtonsoft.Json.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
 </Project>
