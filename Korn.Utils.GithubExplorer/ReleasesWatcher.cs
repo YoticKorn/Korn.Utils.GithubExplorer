@@ -20,7 +20,7 @@ public class ReleasesWatcher : IDisposable
     public void StartHandle()
     {
         if (watcherStarted)
-            throw new InvalidOperationException("[GithubExplorer] ReleasesWatcher->StartHandle: handling already started");
+            throw new KornError("ReleasesWatcher->StartHandle: Handling is already started.");
 
         watcherStarted = true;
 
@@ -36,7 +36,7 @@ public class ReleasesWatcher : IDisposable
         }
     }
 
-    public List<RepositoryReleaseJson> LastWatcherReleases
+    public List<RepositoryReleaseJson> LastWatchedReleases
     {
         get
         {
@@ -53,7 +53,7 @@ public class ReleasesWatcher : IDisposable
         var newReleases = Client.GetRepositoryReleases(Repository);
 
         if (newReleases is null)
-            throw new Exception("[GithubExplorer] ReleasesWatcher->Watch: Unable to fetch the repository releases");
+            throw new KornError("ReleasesWatcher->Watch: Unable to fetch the repository releases.");
 
         if (releases is not null)
         {

@@ -25,14 +25,21 @@ public class GithubClient
 
     T SendSimpleGetRequest<T>(string url)
     {
-        using var request = CreateGetRequest(url);
+        try
+        {
+            using var request = CreateGetRequest(url);
 
-        var response = HttpClient.Send(request);
+            var response = HttpClient.Send(request);
 
-        var data = new StreamReader(response.Content.ReadAsStream()).ReadToEnd();
-        var result = JsonConvert.DeserializeObject<T>(data)!;
+            var data = new StreamReader(response.Content.ReadAsStream()).ReadToEnd();
+            var result = JsonConvert.DeserializeObject<T>(data)!;
 
-        return result;
+            return result;
+        } 
+        catch (Exception ex)
+        {
+            throw new KornException("GithubClient->SendSimpleGetRequest<T>(string): Failed to send an request.", ex);
+        }
     }
 
     public List<RepositoryReleaseJson> GetRepositoryReleases(RepositoryID repository) 
@@ -56,7 +63,7 @@ public class GithubClient
     public byte[] DownloadAsset(RepositoryEntryJson asset)
     {
         if (asset.Type != "file")
-            throw new Exception("[GithubExplorer] GithubClient->DownloadAsset: the asset is not a file");
+            throw new KornError("GithubClient->DownloadAsset: The asset is not a file.");
 
         return DownloadAsset(asset.GetDownloadUrl()!);
     }
