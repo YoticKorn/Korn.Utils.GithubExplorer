@@ -64,11 +64,6 @@ public class ReleasesWatcher : IDisposable
                     var arrivedRelease = newReleases[0];
                     ReleaseArrived?.Invoke(arrivedRelease);
                 }
-                // TODO: Release removed event
-                else if (false)
-                {
-
-                }
             }
         }
 
