@@ -1,2 +1,8 @@
-﻿namespace Korn.Utils.GithubExplorer;
-public record RepositoryID(string Owner, string Name);
+﻿namespace Korn.Utils.GithubExplorer
+{
+    public class RepositoryID
+    {
+        public string Owner;
+        public string Name;
+    }
+}

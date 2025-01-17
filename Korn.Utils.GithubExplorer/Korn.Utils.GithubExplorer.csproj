@@ -1,18 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <TargetFrameworks>net8.0-windows;net472</TargetFrameworks>
     <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Korn.Logger\Korn.Logger\Korn.Logger.csproj" />
+    <ProjectReference Include="..\..\Korn.Shared\Korn.Shared.Internal\Korn.Shared.Internal.csproj" />
+    <ProjectReference Include="..\..\Korn.Shared\Korn.Shared\Korn.Shared.csproj" />
     <ProjectReference Include="..\..\Korn.Utils.System\Korn.Utils.System\Korn.Utils.System.csproj" />
   </ItemGroup>
 

@@ -1,76 +1,82 @@
-﻿namespace Korn.Utils.GithubExplorer;
-public class ReleasesWatcher : IDisposable
+﻿using System.Collections.Generic;
+using System.Threading;
+using System;
+
+namespace Korn.Utils.GithubExplorer
 {
-    public ReleasesWatcher(GithubClient client, RepositoryID repository)
+    public class ReleasesWatcher : IDisposable
     {
-        Client = client;
-        Repository = repository;
-
-        Watch();
-    }
-
-    public readonly GithubClient Client;
-    public readonly RepositoryID Repository;
-    public TimeSpan WatchDelay = TimeSpan.FromSeconds(30);
-
-    public delegate void ReleaseArrivedDelegate(RepositoryReleaseJson release);
-    public event ReleaseArrivedDelegate? ReleaseArrived;
-
-    bool watcherStarted;
-    public void StartHandle()
-    {
-        if (watcherStarted)
-            throw new KornError("ReleasesWatcher->StartHandle: Handling is already started.");
-
-        watcherStarted = true;
-
-        new Thread(Handler).Start();
-
-        void Handler()
+        public ReleasesWatcher(GithubClient client, RepositoryID repository)
         {
-            while (!isDisposed)
-            {
-                Thread.Sleep(WatchDelay);
-                Watch();
-            }
+            Client = client;
+            Repository = repository;
+
+            Watch();
         }
-    }
 
-    public List<RepositoryReleaseJson> LastWatchedReleases
-    {
-        get
+        public readonly GithubClient Client;
+        public readonly RepositoryID Repository;
+        public TimeSpan WatchDelay = TimeSpan.FromSeconds(30);
+
+        public delegate void ReleaseArrivedDelegate(RepositoryReleaseJson release);
+        public event ReleaseArrivedDelegate ReleaseArrived;
+
+        bool watcherStarted;
+        public void StartHandle()
         {
-            if (releases is null)
-                Watch();
+            if (watcherStarted)
+                throw new KornError("ReleasesWatcher->StartHandle: Handling is already started.");
 
-            return releases!;
-        }
-    }
+            watcherStarted = true;
 
-    List<RepositoryReleaseJson>? releases;
-    void Watch()
-    {
-        var newReleases = Client.GetRepositoryReleases(Repository);
+            new Thread(Handler).Start();
 
-        if (newReleases is null)
-            throw new KornError("ReleasesWatcher->Watch: Unable to fetch the repository releases.");
-
-        if (releases is not null)
-        {
-            if (newReleases.Count != releases.Count)
+            void Handler()
             {
-                if (newReleases.Count > releases.Count)
+                while (!isDisposed)
                 {
-                    var arrivedRelease = newReleases[0];
-                    ReleaseArrived?.Invoke(arrivedRelease);
+                    Thread.Sleep(WatchDelay);
+                    Watch();
                 }
             }
         }
 
-        releases = newReleases;
-    }
+        public List<RepositoryReleaseJson> LastWatchedReleases
+        {
+            get
+            {
+                if (releases == null)
+                    Watch();
 
-    bool isDisposed;
-    public void Dispose() => isDisposed = true;
-    ~ReleasesWatcher() => Dispose();
+                return releases;
+            }
+        }
+
+        List<RepositoryReleaseJson> releases;
+        void Watch()
+        {
+            var newReleases = Client.GetRepositoryReleases(Repository);
+
+            if (newReleases == null)
+                throw new KornError("ReleasesWatcher->Watch: Unable to fetch the repository releases.");
+
+            if (releases != null)
+            {
+                if (newReleases.Count != releases.Count)
+                {
+                    if (newReleases.Count > releases.Count)
+                    {
+                        var arrivedRelease = newReleases[0];
+                        ReleaseArrived?.Invoke(arrivedRelease);
+                    }
+                }
+            }
+
+            releases = newReleases;
+        }
+
+        bool isDisposed;
+        public void Dispose() => isDisposed = true;
+        ~ReleasesWatcher() => Dispose();
+    }
 }
