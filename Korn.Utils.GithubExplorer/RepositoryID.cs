@@ -7,5 +7,7 @@
 
         public string Owner;
         public string Name;
+
+        public override string ToString() => $"{Owner}.{Name}";
     }
 }
